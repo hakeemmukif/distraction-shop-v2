@@ -1,6 +1,11 @@
 # Distraction Shop v2.0
 
+[![Deploy to Vercel](https://github.com/hakeemmukif/distraction-shop-v2/actions/workflows/deploy.yml/badge.svg)](https://github.com/hakeemmukif/distraction-shop-v2/actions/workflows/deploy.yml)
+[![CI](https://github.com/hakeemmukif/distraction-shop-v2/actions/workflows/ci.yml/badge.svg)](https://github.com/hakeemmukif/distraction-shop-v2/actions/workflows/ci.yml)
+
 Modern e-commerce platform for streetwear and skateboarding merchandise built with Next.js 14, TypeScript, and Stripe.
+
+**🚀 Automatic Deployment:** Every push to `main` deploys to production. Every PR creates a preview deployment.
 
 ## Tech Stack
 
@@ -107,21 +112,45 @@ src/
 
 ## Deployment
 
-### GitHub Setup
+### Automated CI/CD Pipeline
+
+This project uses **GitHub Actions** for automated deployment to Vercel:
+
+- **Production:** Push to `main` → Automatic deployment to production
+- **Preview:** Open PR → Automatic preview deployment with unique URL
+- **Continuous Integration:** All branches run TypeScript, ESLint, and build checks
+
+### Quick Setup
+
+1. **Configure GitHub Secrets** (see [DEPLOYMENT.md](./DEPLOYMENT.md))
+   - `VERCEL_TOKEN`
+   - `VERCEL_ORG_ID`
+   - `VERCEL_PROJECT_ID`
+   - All environment variables
+
+2. **Push to main:**
+   ```bash
+   git push origin main
+   ```
+
+3. **GitHub Actions will automatically:**
+   - ✅ Run TypeScript type checking
+   - ✅ Run ESLint
+   - ✅ Build the project
+   - 🚀 Deploy to Vercel
+   - 💬 Comment deployment URL
+
+### Manual Deployment
 
 ```bash
-# Create repo on GitHub, then:
-git remote add origin https://github.com/yourusername/distraction-shop-v2.0.git
-git branch -M main
-git push -u origin main
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy to production
+vercel --prod
 ```
 
-### Vercel Deployment
-
-1. Import project from GitHub
-2. Add environment variables
-3. Deploy
-4. Configure Stripe webhook: `https://yourdomain.com/api/stripe/webhook`
+📖 **Full deployment guide:** See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions, troubleshooting, and configuration.
 
 ## Scripts
 
