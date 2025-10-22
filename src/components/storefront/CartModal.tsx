@@ -2,10 +2,11 @@
 
 import { useCart } from '@/contexts/CartContext';
 import Image from 'next/image';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function CartModal() {
   const { cart, itemCount, totalPrice, isCartOpen, closeCart, removeItem, updateQuantity } = useCart();
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   // Prevent body scroll when modal is open
   useEffect(() => {
@@ -187,14 +188,73 @@ export default function CartModal() {
 
             {/* Checkout Button */}
             <button
-              className="w-full py-3 px-6 bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-800 transition-colors"
-              onClick={() => {
-                closeCart();
-                // TODO: Navigate to checkout (will be implemented in Phase 6)
-                alert('Checkout functionality coming soon!');
+              className="w-full py-3 px-6 bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-800 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+              disabled={isCheckingOut}
+              onClick={async () => {
+                setIsCheckingOut(true);
+                try {
+                  // Prepare cart items for checkout
+                  const items = cart.items.map((item) => ({
+                    productId: item.productId,
+                    priceId: item.priceId,
+                    name: item.name,
+                    price: item.price,
+                    quantity: item.quantity,
+                    size: item.size,
+                    image: item.image,
+                    stock: item.stock,
+                  }));
+
+                  // Create checkout session
+                  const response = await fetch('/api/checkout/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ items }),
+                  });
+
+                  if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Checkout failed');
+                  }
+
+                  const { url } = await response.json();
+
+                  // Redirect to checkout (Stripe or mock success page)
+                  window.location.href = url;
+                } catch (error) {
+                  console.error('Checkout error:', error);
+                  alert(error instanceof Error ? error.message : 'Failed to start checkout');
+                  setIsCheckingOut(false);
+                }
               }}
             >
-              Proceed to Checkout
+              {isCheckingOut ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg
+                    className="animate-spin h-5 w-5"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  Processing...
+                </span>
+              ) : (
+                'Proceed to Checkout'
+              )}
             </button>
 
             {/* Continue Shopping */}
