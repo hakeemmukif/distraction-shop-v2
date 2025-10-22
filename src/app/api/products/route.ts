@@ -36,15 +36,16 @@ export async function GET(request: NextRequest) {
           }
 
           // Parse sizes from metadata
-          const sizes: Array<{ size: string; stock: number }> = [];
+          const sizes: Array<{ label: string; stock: number; available: boolean }> = [];
           Object.keys(product.metadata).forEach((key) => {
             if (key.startsWith('size_') && !key.includes('stock')) {
               const sizeLabel = product.metadata[key];
               const stockKey = `${key}_stock`;
               const stock = parseInt(product.metadata[stockKey] || '0');
               sizes.push({
-                size: sizeLabel,
+                label: sizeLabel,
                 stock: stock,
+                available: stock > 0,
               });
             }
           });
@@ -55,13 +56,13 @@ export async function GET(request: NextRequest) {
             description: product.description || '',
             price: price,
             currency: 'myr',
-            images: {
-              image_1: product.metadata.image_1,
-              image_2: product.metadata.image_2,
-              image_3: product.metadata.image_3,
-            },
+            images: [
+              product.metadata.image_1,
+              product.metadata.image_2,
+              product.metadata.image_3,
+            ] as [string, string, string],
             sizes: sizes,
-            category: product.metadata.unit_label,
+            category: product.metadata.unit_label as 'home' | 'skate_shop' | 'preloved',
           };
         })
     );
