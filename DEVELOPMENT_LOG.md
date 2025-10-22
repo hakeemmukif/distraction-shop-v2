@@ -77,6 +77,153 @@
 
 ---
 
+## 2025-10-22
+
+### [Shopping Cart] Complete Shopping Cart Implementation
+**Files Created/Modified:**
+- `src/types/cart.ts` - Cart type definitions
+- `src/contexts/CartContext.tsx` - Cart context with localStorage persistence
+- `src/components/storefront/CartModal.tsx` - Cart UI modal/drawer component
+- `src/components/storefront/Header.tsx` - Updated with cart icon and badge
+- `src/app/products/[id]/page.tsx` - Added add-to-cart functionality
+- `src/app/layout.tsx` - Wrapped app with CartProvider
+
+**Implementation Details:**
+
+#### Cart System Architecture
+- **React Context API** for global cart state management
+- **localStorage persistence** - Cart survives page refreshes and browser restarts
+- **Cart storage key:** `distraction-cart`
+- **Hydration-safe** - Prevents SSR/client mismatch errors
+
+#### Cart Features
+- **Add to Cart:**
+  - Add items from product detail page
+  - Size selection validation (required if product has sizes)
+  - Duplicate detection (same product + size increases quantity)
+  - Loading state with spinner animation
+  - Auto-opens cart modal after adding
+
+- **Cart Management:**
+  - Dynamic item count badge on header cart icon
+  - Quantity controls (+/- buttons)
+  - Remove item functionality
+  - Real-time total price calculation
+  - Empty cart state with call-to-action
+
+- **Stock Validation:**
+  - Prevents adding more items than available stock
+  - Disables quantity increase button when at stock limit
+  - Validation in both `addItem` and `updateQuantity` functions
+  - Console warnings for stock violations
+
+- **Cart UI (Modal/Drawer):**
+  - Slides in from right side
+  - Backdrop overlay (closes cart on click)
+  - Responsive design (full width on mobile, 384px on desktop)
+  - Product images (80x80px thumbnails)
+  - Size display for items with sizes
+  - Item subtotals and cart total
+  - Free shipping notice for Malaysia
+  - Scroll lock when cart is open
+
+#### Technical Implementation
+```typescript
+// Cart Data Structure
+{
+  items: [
+    {
+      productId: string,
+      priceId: string,
+      name: string,
+      price: number, // cents
+      size: string | null,
+      quantity: number,
+      image: string,
+      stock?: number
+    }
+  ],
+  lastUpdated: string // ISO timestamp
+}
+```
+
+**Cart Context Functions:**
+- `addItem(item)` - Add item to cart (increases quantity if exists)
+- `removeItem(productId, size)` - Remove item from cart
+- `updateQuantity(productId, size, quantity)` - Update item quantity
+- `clearCart()` - Empty entire cart
+- `openCart()` / `closeCart()` - Control modal visibility
+
+**Computed Values:**
+- `itemCount` - Total number of items in cart
+- `totalPrice` - Sum of all item prices × quantities (in cents)
+
+#### User Experience Improvements
+1. **Cart Badge:**
+   - Only shows when cart has items (count > 0)
+   - Red badge with white text for visibility
+   - Updates instantly when items added/removed
+
+2. **Product Detail Page:**
+   - "Select a size" button state when size not selected
+   - "Adding..." state with spinner during add operation
+   - Automatic cart modal open after successful add
+   - Disabled state for out-of-stock products
+
+3. **Cart Modal:**
+   - Empty state with illustration and CTA
+   - Product thumbnails with Next.js Image optimization
+   - Quantity controls with intuitive +/- buttons
+   - Stock limit enforcement (+ button disabled at limit)
+   - Remove button per item
+   - Subtotal per item + overall total
+   - Free shipping indicator
+   - "Proceed to Checkout" button (placeholder for Phase 6)
+   - "Continue Shopping" link
+
+#### Stock Validation Logic
+```typescript
+// When adding item
+if (existingItem.stock && newQuantity > existingItem.stock) {
+  console.warn(`Cannot add more. Only ${existingItem.stock} available.`);
+  return prevCart; // Don't update
+}
+
+// When updating quantity
+if (item.stock && quantity > item.stock) {
+  console.warn(`Cannot set quantity to ${quantity}. Only ${item.stock} available.`);
+  return prevCart; // Don't update
+}
+```
+
+#### Mobile Responsiveness
+- Cart drawer: Full width on mobile, 384px on desktop
+- Cart icon visible in both desktop nav and mobile menu
+- Touch-friendly button sizes (minimum 44x44px)
+- Smooth transitions and animations
+
+**Testing:**
+- ✅ Add to cart functionality
+- ✅ Cart persistence across page refreshes
+- ✅ Quantity increase/decrease
+- ✅ Item removal
+- ✅ Stock validation
+- ✅ Empty cart state
+- ✅ Cart badge updates
+- ✅ Mobile responsive design
+- ✅ Hydration safety (no SSR mismatch)
+
+**Next Steps:**
+- Phase 6: Stripe Checkout Integration
+  - Create checkout session API route
+  - Implement webhook handler
+  - Build success/confirmation page
+  - Email notifications via Resend
+
+**Status:** ✅ Completed
+
+---
+
 ## Next Steps (Requires External Services)
 
 ### 1. Setup Railway PostgreSQL
@@ -118,19 +265,19 @@ npm run dev
 
 ## Future Enhancements (Not Yet Implemented)
 
-### Phase 2: Storefront
+### Phase 2: Storefront ✅ COMPLETED
 - Landing page with shop open/closed logic
 - Homepage with product grid
 - Product detail page with 3 image carousel
 - Shop schedule configuration
 
-### Phase 3: Shopping Cart
+### Phase 3: Shopping Cart ✅ COMPLETED
 - Cart context with localStorage persistence
 - Add to cart with size selection
 - Cart modal/drawer
 - Stock validation
 
-### Phase 4: Checkout
+### Phase 4: Checkout (NEXT PRIORITY)
 - Stripe Checkout integration
 - Webhook handling (checkout.session.completed)
 - Order confirmation page

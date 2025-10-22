@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Header from '@/components/storefront/Header';
 import Footer from '@/components/storefront/Footer';
 import { Product } from '@/types/product';
+import { useCart } from '@/contexts/CartContext';
 
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const [product, setProduct] = useState<Product | null>(null);
@@ -13,6 +14,8 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   const [error, setError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string>('');
+  const [isAdding, setIsAdding] = useState(false);
+  const { addItem, openCart } = useCart();
 
   useEffect(() => {
     async function fetchProduct() {
@@ -79,6 +82,38 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   const inStock = product.sizes
     ? product.sizes.some((size) => size.available)
     : true;
+
+  const handleAddToCart = () => {
+    if (!product) return;
+
+    // Validate size selection if product has sizes
+    if (product.sizes && product.sizes.length > 0 && !selectedSize) {
+      return; // Button should be disabled, but extra check
+    }
+
+    setIsAdding(true);
+
+    // Get stock for selected size
+    const selectedSizeObj = product.sizes?.find((s) => s.label === selectedSize);
+    const stock = selectedSizeObj?.stock;
+
+    // Add to cart
+    addItem({
+      productId: product.id,
+      priceId: product.priceId || '',
+      name: product.name,
+      price: product.price,
+      size: selectedSize || null,
+      image: product.images[0],
+      stock,
+    });
+
+    // Open cart modal
+    setTimeout(() => {
+      setIsAdding(false);
+      openCart();
+    }, 300);
+  };
 
   return (
     <>
@@ -178,12 +213,42 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               <div className="space-y-4 pt-4">
                 {inStock ? (
                   <button
-                    disabled={product.sizes && product.sizes.length > 0 && !selectedSize}
+                    onClick={handleAddToCart}
+                    disabled={
+                      (product.sizes && product.sizes.length > 0 && !selectedSize) ||
+                      isAdding
+                    }
                     className="w-full py-4 px-6 bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-800 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
                   >
-                    {product.sizes && product.sizes.length > 0 && !selectedSize
-                      ? 'Select a size'
-                      : 'Add to Cart'}
+                    {isAdding ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <svg
+                          className="animate-spin h-5 w-5"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          />
+                        </svg>
+                        Adding...
+                      </span>
+                    ) : product.sizes && product.sizes.length > 0 && !selectedSize ? (
+                      'Select a size'
+                    ) : (
+                      'Add to Cart'
+                    )}
                   </button>
                 ) : (
                   <button
