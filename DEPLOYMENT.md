@@ -129,11 +129,46 @@ Set the `SHOP_SCHEDULE` environment variable with this JSON format:
 
 ---
 
+## Environment Mode Detection
+
+The application **automatically detects** the runtime environment based on the `STRIPE_SECRET_KEY`:
+
+| Secret Key Format | Detected Mode | Behavior |
+|------------------|---------------|----------|
+| `sk_test_dummy` or invalid/missing | **Mock** | Generates fake checkout sessions and orders (no real Stripe API calls) |
+| `sk_test_xxx` (valid Stripe test key) | **Staging** | Uses Stripe Test Mode for real API interactions |
+| `sk_live_xxx` (valid Stripe live key) | **Production** | Uses Stripe Live Mode for real customer transactions |
+
+### Key Benefits
+
+- **No manual configuration needed** - just set the appropriate Stripe key
+- **Prevents accidental live charges** - invalid keys safely default to mock mode
+- **Seamless local development** - use dummy keys for testing without Stripe account
+- **Environment parity** - same codebase works in all environments
+
+### Recommended Setup
+
+| Environment | Stripe Key | Purpose |
+|------------|------------|---------|
+| **Local Development** | `sk_test_dummy` | Work offline without Stripe account |
+| **Staging (main branch)** | `sk_test_xxx` | Test with real Stripe test mode |
+| **Production (production branch)** | `sk_live_xxx` | Handle real customer payments |
+
+---
+
 ## Deployment Workflow
 
 ### Automatic Deployments
 
-#### Production Deployment (Push to `main`)
+The project uses a **three-environment deployment strategy**:
+
+| Branch | Environment | URL Pattern | Auto-Deploy |
+|--------|-------------|-------------|-------------|
+| **Pull Requests** | Preview | `project-name-git-pr-N.vercel.app` | Yes (on PR) |
+| **`main`** | **Staging** | `project-name-git-main.vercel.app` | Yes (on push) |
+| **`production`** | **Production** | `your-domain.vercel.app` | Yes (on push) |
+
+#### Staging Deployment (Push to `main`)
 
 1. Developer pushes code to `main` branch
 2. GitHub Actions triggers `.github/workflows/deploy.yml`
@@ -141,29 +176,69 @@ Set the `SHOP_SCHEDULE` environment variable with this JSON format:
    - ✅ TypeScript type checking
    - ✅ ESLint linting
    - ✅ Build verification
-   - 🚀 Deploy to Vercel production
-4. Deployment URL posted as commit comment
+   - 🚀 Deploy to Vercel staging (preview environment)
+4. Staging URL posted as commit comment
+
+**Use Case:** Test features in a production-like environment before going live.
+
+#### Production Deployment (Push to `production`)
+
+1. Staging is tested and ready for production
+2. Merge `main` into `production` branch:
+   ```bash
+   git checkout production
+   git merge main
+   git push origin production
+   ```
+3. GitHub Actions triggers production deployment
+4. Production URL posted as commit comment
+
+**Use Case:** Deploy stable, tested code to live environment accessible to customers.
 
 #### Preview Deployment (Pull Request)
 
-1. Developer creates a pull request to `main`
+1. Developer creates a pull request to `main` or `production`
 2. GitHub Actions triggers preview deployment
 3. Workflow runs:
    - ✅ TypeScript type checking
    - ✅ ESLint linting
    - ✅ Build verification
    - 🚀 Deploy to Vercel preview environment
-4. Preview URL posted as PR comment
+4. Preview URL posted as PR comment (updates on every commit)
+
+**Use Case:** Test PR changes in isolation before merging.
+
+### Creating the Production Branch
+
+The `production` branch doesn't exist yet. Create it from `main` when ready for first production deployment:
+
+```bash
+# Ensure main branch is up to date
+git checkout main
+git pull origin main
+
+# Create production branch from main
+git checkout -b production
+
+# Push to remote (this triggers first production deployment)
+git push -u origin production
+```
+
+**Important:** After creating the production branch, only merge from `main` after thorough testing in staging.
 
 ### Manual Deployment
 
 If you need to deploy manually:
 
 ```bash
-# Production deployment
+# Staging deployment (from main branch)
+vercel
+
+# Production deployment (from production branch)
+git checkout production
 vercel --prod
 
-# Preview deployment
+# Preview deployment (from any branch)
 vercel
 ```
 
