@@ -1,5 +1,100 @@
 # Development Log - Distraction Shop v2.0
 
+## 2025-10-26 03:33
+### [Feature] Complete Stripe Integration
+**Files Modified:**
+- .env - Added Stripe API keys (secret and publishable)
+- src/lib/stripe/client.ts - Improved with proper error handling
+- src/lib/stripe/client-side.ts - Created client-side Stripe helper
+- src/app/api/checkout/route.ts - Created checkout session API
+- src/app/api/stripe/webhook/route.ts - Created webhook handler
+
+**Implementation Details:**
+
+#### Stripe Configuration
+- Added test API keys to .env:
+  - STRIPE_SECRET_KEY (server-side only)
+  - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY (client-side safe)
+- Removed development comments and dummy fallbacks from stripe client
+- Enabled strict error checking for missing environment variables
+
+#### Client-Side Stripe Helper
+- Created getStripe() function to lazy-load Stripe.js
+- Single instance pattern to avoid multiple loads
+- redirectToCheckout() helper for seamless checkout flow
+- Full TypeScript support with proper types
+
+#### Checkout API (POST /api/checkout)
+- Validates all cart items before creating session
+- Checks product availability and stock levels
+- Verifies size availability and stock for sized products
+- Returns detailed validation errors for invalid items
+- Creates Stripe Checkout Session with:
+  - Line items with quantities and prices
+  - Size information in line item descriptions
+  - Success/cancel URLs
+  - Order metadata for webhook processing
+
+#### Webhook Handler (POST /api/stripe/webhook)
+- Verifies webhook signature for security
+- Handles three event types:
+  - checkout.session.completed (order success)
+  - payment_intent.succeeded (payment confirmed)
+  - payment_intent.payment_failed (payment failed)
+- Logs order details for tracking
+- Proper error handling and logging
+
+**Security Features:**
+- All Stripe secret operations server-side only
+- Webhook signature verification prevents spoofing
+- Stock validation prevents overselling
+- Comprehensive input validation
+
+**Next Steps:**
+- Configure webhook endpoint in Stripe Dashboard
+- Add STRIPE_WEBHOOK_SECRET to .env after webhook setup
+- Implement shopping cart UI to use checkout API
+- Create order confirmation page at /success
+
+**Related Context:**
+- Checkout API route: src/app/api/checkout/route.ts:1
+- Webhook handler: src/app/api/stripe/webhook/route.ts:1
+- Client helper: src/lib/stripe/client-side.ts:1
+
+**Status:** Completed
+
+---
+
+## 2025-10-26 20:30
+### [Feature] Mock Product Detail Pages
+**Files Modified:**
+- src/app/api/products/[id]/route.ts - Added mock product support
+
+**Implementation Details:**
+- Added logic to detect mock product IDs (starting with "mock-")
+- When a mock product ID is detected, returns data from mockProducts array instead of querying Stripe
+- Maintains backward compatibility with real Stripe products
+- No changes required to frontend components
+
+**Problem Solved:**
+- Previously, clicking on mock products from the home page resulted in "Product Not Found" errors
+- The API route only queried Stripe, which doesn't have mock product IDs
+- Now users can browse mock product details seamlessly while testing the application
+
+**Technical Approach:**
+- Early return pattern: Check for mock products before Stripe API calls
+- Reuses existing Product type definition for type safety
+- Simple string prefix matching for mock detection ("mock-")
+
+**Related Context:**
+- Mock products defined in src/data/mockProducts.ts
+- Home page uses mock products for display (src/app/home/page.tsx)
+- Product detail page unchanged (src/app/products/[id]/page.tsx)
+
+**Status:** Completed
+
+---
+
 ## 2025-10-12
 
 ### [Initial Setup] Project Foundation & Admin Panel

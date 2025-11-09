@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Header from '@/components/storefront/Header';
 import Footer from '@/components/storefront/Footer';
 import { Product } from '@/types/product';
+import { useCart } from '@/contexts/CartContext';
 
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const [product, setProduct] = useState<Product | null>(null);
@@ -13,6 +14,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   const [error, setError] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string>('');
+  const { addItem } = useCart();
 
   useEffect(() => {
     async function fetchProduct() {
@@ -79,6 +81,28 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   const inStock = product.sizes
     ? product.sizes.some((size) => size.available)
     : true;
+
+  const handleAddToCart = () => {
+    if (!product) return;
+
+    // Get stock for selected size
+    let stock = 999; // Default stock if no sizes
+    if (product.sizes && product.sizes.length > 0) {
+      const selectedSizeData = product.sizes.find((s) => s.label === selectedSize);
+      if (selectedSizeData) {
+        stock = selectedSizeData.stock;
+      }
+    }
+
+    addItem({
+      productId: product.id,
+      name: product.name,
+      price: product.price / 100, // Convert from cents to dollars
+      size: selectedSize || 'One Size',
+      image: product.images[0],
+      stock,
+    });
+  };
 
   return (
     <>
@@ -178,6 +202,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
               <div className="space-y-4 pt-4">
                 {inStock ? (
                   <button
+                    onClick={handleAddToCart}
                     disabled={product.sizes && product.sizes.length > 0 && !selectedSize}
                     className="w-full py-4 px-6 bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-800 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
                   >

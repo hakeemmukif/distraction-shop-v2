@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { stripe } from '@/lib/stripe/client';
+import { mockProducts } from '@/data/mockProducts';
 
 export async function GET(
   request: NextRequest,
@@ -7,6 +7,23 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
+
+    // Check if this is a mock product (handle before importing Stripe)
+    if (id.startsWith('mock-')) {
+      const mockProduct = mockProducts.find(p => p.id === id);
+
+      if (!mockProduct) {
+        return NextResponse.json(
+          { error: 'Product not found' },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json(mockProduct);
+    }
+
+    // Only import Stripe when needed for real products
+    const { stripe } = await import('@/lib/stripe/client');
 
     if (!process.env.STRIPE_SECRET_KEY) {
       return NextResponse.json(

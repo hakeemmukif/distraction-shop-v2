@@ -25,11 +25,6 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/shop" className="text-gray-400 hover:text-white transition-colors">
-                  Distraction SHOP
-                </Link>
-              </li>
-              <li>
                 <Link href="/preloved" className="text-gray-400 hover:text-white transition-colors">
                   Preloved
                 </Link>

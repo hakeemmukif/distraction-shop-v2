@@ -2,14 +2,18 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { useCart } from '@/contexts/CartContext';
+import CartDrawer from './CartDrawer';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
+  const { cart } = useCart();
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
+        <div className="relative flex h-16 items-center">
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="/home" className="text-xl font-bold text-gray-900">
@@ -17,8 +21,8 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex md:items-center md:space-x-8">
+          {/* Desktop Navigation - Centered */}
+          <div className="hidden md:flex md:items-center absolute left-1/2 transform -translate-x-1/2">
             <Link
               href="/home"
               className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
@@ -26,14 +30,8 @@ export default function Header() {
               Home
             </Link>
             <Link
-              href="/shop"
-              className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
-            >
-              Distraction SHOP
-            </Link>
-            <Link
               href="/preloved"
-              className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
+              className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors mx-8"
             >
               Preloved
             </Link>
@@ -43,7 +41,7 @@ export default function Header() {
             >
               Skate Shop
             </Link>
-            <Link
+            {/* <Link
               href="/terms"
               className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
             >
@@ -54,12 +52,15 @@ export default function Header() {
               className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
             >
               Contact
-            </Link>
+            </Link> */}
           </div>
 
           {/* Cart Icon (Desktop) */}
-          <div className="hidden md:flex md:items-center">
-            <button className="relative p-2 text-gray-700 hover:text-gray-900">
+          <div className="hidden md:flex md:items-center ml-auto">
+            <button
+              onClick={() => setCartDrawerOpen(true)}
+              className="relative p-2 text-gray-700 hover:text-gray-900"
+            >
               <svg
                 className="h-6 w-6"
                 fill="none"
@@ -71,15 +72,17 @@ export default function Header() {
               >
                 <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
-              {/* Cart badge (will be dynamic later) */}
-              <span className="absolute top-0 right-0 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-600 rounded-full">
-                0
-              </span>
+              {/* Cart badge */}
+              {cart.itemCount > 0 && (
+                <span className="absolute top-0 right-0 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-600 rounded-full">
+                  {cart.itemCount}
+                </span>
+              )}
             </button>
           </div>
 
           {/* Mobile menu button */}
-          <div className="flex md:hidden">
+          <div className="flex md:hidden ml-auto">
             <button
               type="button"
               className="inline-flex items-center justify-center p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100"
@@ -131,13 +134,6 @@ export default function Header() {
                 Home
               </Link>
               <Link
-                href="/shop"
-                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Distraction SHOP
-              </Link>
-              <Link
                 href="/preloved"
                 className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
                 onClick={() => setMobileMenuOpen(false)}
@@ -151,7 +147,7 @@ export default function Header() {
               >
                 Skate Shop
               </Link>
-              <Link
+              {/* <Link
                 href="/terms"
                 className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
                 onClick={() => setMobileMenuOpen(false)}
@@ -164,19 +160,30 @@ export default function Header() {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Contact
-              </Link>
+              </Link> */}
               <div className="border-t border-gray-200 pt-2 mt-2">
-                <button className="w-full flex items-center justify-between px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md">
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    setCartDrawerOpen(true);
+                  }}
+                  className="w-full flex items-center justify-between px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
+                >
                   <span>Cart</span>
-                  <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-600 rounded-full">
-                    0
-                  </span>
+                  {cart.itemCount > 0 && (
+                    <span className="inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-600 rounded-full">
+                      {cart.itemCount}
+                    </span>
+                  )}
                 </button>
               </div>
             </div>
           </div>
         )}
       </nav>
+
+      {/* Cart Drawer */}
+      <CartDrawer isOpen={cartDrawerOpen} onClose={() => setCartDrawerOpen(false)} />
     </header>
   );
 }

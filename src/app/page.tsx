@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import ShopToggle from '@/components/ShopToggle';
 
 type ShopStatus = {
   isOpen: boolean;
@@ -15,26 +16,26 @@ export default function LandingPage() {
   const [loading, setLoading] = useState(true);
   const [doorHovered, setDoorHovered] = useState(false);
 
-  useEffect(() => {
-    async function fetchStatus() {
-      try {
-        const response = await fetch('/api/shop/status');
-        const data = await response.json();
-        setStatus(data);
-      } catch (error) {
-        console.error('Failed to fetch shop status:', error);
-        // Default to open on error
-        setStatus({
-          isOpen: true,
-          message: 'Shop is open',
-          nextStatusChange: null,
-          currentTime: new Date().toISOString(),
-        });
-      } finally {
-        setLoading(false);
-      }
+  async function fetchStatus() {
+    try {
+      const response = await fetch('/api/shop/status');
+      const data = await response.json();
+      setStatus(data);
+    } catch (error) {
+      console.error('Failed to fetch shop status:', error);
+      // Default to open on error
+      setStatus({
+        isOpen: true,
+        message: 'Shop is open',
+        nextStatusChange: null,
+        currentTime: new Date().toISOString(),
+      });
+    } finally {
+      setLoading(false);
     }
+  }
 
+  useEffect(() => {
     fetchStatus();
   }, []);
 
@@ -52,6 +53,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white p-4">
+      <ShopToggle onToggle={fetchStatus} />
       {status.isOpen ? (
         // Entry Door (Shop Open)
         <Link href="/home" className="flex flex-col items-center">

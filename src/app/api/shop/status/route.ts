@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getShopOverride } from '@/lib/shop-override';
 
 // Default schedule (used if SHOP_SCHEDULE env var not set)
 const DEFAULT_SCHEDULE = {
@@ -61,7 +62,29 @@ function isShopOpen(config: ShopConfig): {
   const currentMinute = currentDate.getMinutes();
   const currentTimeMinutes = currentHour * 60 + currentMinute;
 
-  // Check override status first
+  // Check dev/staging override first (takes precedence)
+  const shopOverride = getShopOverride();
+  if (shopOverride === true) {
+    return {
+      isOpen: true,
+      message: 'Shop is open (dev override)',
+      nextStatusChange: null,
+      currentTime: currentDate.toISOString(),
+      schedule: config.schedule,
+    };
+  }
+
+  if (shopOverride === false) {
+    return {
+      isOpen: false,
+      message: 'Shop is closed (dev override)',
+      nextStatusChange: null,
+      currentTime: currentDate.toISOString(),
+      schedule: config.schedule,
+    };
+  }
+
+  // Check override status from config/env
   if (config.overrideStatus === 'open') {
     return {
       isOpen: true,
