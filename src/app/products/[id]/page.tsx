@@ -7,6 +7,7 @@ import Header from '@/components/storefront/Header';
 import Footer from '@/components/storefront/Footer';
 import { Product } from '@/types/product';
 import { useCart } from '@/contexts/CartContext';
+import { useToast } from '@/contexts/ToastContext';
 
 export default function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const [product, setProduct] = useState<Product | null>(null);
@@ -15,6 +16,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState<string>('');
   const { addItem } = useCart();
+  const { showToast } = useToast();
 
   useEffect(() => {
     async function fetchProduct() {
@@ -102,6 +104,9 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       image: product.images[0],
       stock,
     });
+
+    // Show success toast
+    showToast(`Added ${product.name} to cart!`, 'success');
   };
 
   return (

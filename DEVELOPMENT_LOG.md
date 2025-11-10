@@ -1,5 +1,120 @@
 # Development Log - Distraction Shop v2.0
 
+## 2025-11-10
+### [Feature] Complete Shopping Cart & Checkout Flow + Toast Notifications
+**Files Created:**
+- src/contexts/ToastContext.tsx - Toast notification system
+- src/lib/db.ts - Prisma client singleton
+
+**Files Modified:**
+- src/app/layout.tsx - Added ToastProvider wrapper
+- src/app/products/[id]/page.tsx - Added toast notification on Add to Cart
+- src/app/globals.css - Added toast slide-in animation
+
+**Implementation Details:**
+
+#### Toast Notification System
+- Created ToastProvider context for global toast notifications
+- Auto-dismiss toasts after 3 seconds
+- Support for success, error, and info toast types
+- Smooth slide-in animation from bottom-right
+- Manual dismiss option with close button
+- Integrated with Add to Cart functionality
+
+#### Shopping Cart Features (Already Implemented)
+**Cart Context:**
+- localStorage persistence for cart data
+- Automatic save/load on mount
+- Stock validation when adding items
+- Quantity controls with stock limits
+- Unique cart items by productId + size
+
+**Cart UI Components:**
+- CartDrawer: Slide-in drawer from right
+- CartItem: Individual cart item with quantity controls
+- Cart badge in header showing item count
+- Empty cart state with call-to-action
+
+#### Checkout Flow (Already Implemented)
+**Frontend:**
+- Checkout page with shipping information form
+- Order summary with item details
+- Form validation (required fields)
+- Redirect to Stripe Checkout on submit
+- Error handling and user feedback
+
+**Backend:**
+- Stock validation before creating checkout session
+- Stripe customer creation/lookup by email
+- Checkout session with metadata
+- Support for card and FPX payments
+- Malaysia-only shipping restriction
+
+#### Success Page (Already Implemented)
+- Order confirmation with session ID
+- Cart cleared after successful checkout
+- Next steps information
+- Links to continue shopping or view orders
+
+#### Storefront Enhancements (Already Implemented)
+**Product Cards:**
+- Image hover effect (front → back view)
+- Out of stock badge
+- Size indicators with availability status
+- Responsive grid layout
+
+**Product Detail Page:**
+- 3-image gallery with thumbnail navigation
+- Size selector with stock indicators
+- Disabled out-of-stock sizes
+- Add to Cart with size selection
+- Breadcrumb navigation
+- Product details section
+
+#### Database Setup
+- Created Prisma client singleton (src/lib/db.ts)
+- Prevents multiple Prisma instances in development
+- Required for webhook and orders API routes
+
+**Key Features:**
+- Complete shopping cart with persistence
+- Full Stripe Checkout integration
+- Stock validation throughout flow
+- Visual feedback with toast notifications
+- Mobile-responsive design
+- Comprehensive error handling
+
+**User Experience Improvements:**
+- Toast notifications provide immediate feedback
+- Cart persists across sessions
+- Stock limits prevent overselling
+- Smooth animations and transitions
+- Clear visual indicators for out-of-stock items
+
+**Technical Highlights:**
+- React Context API for global state
+- localStorage for cart persistence
+- Custom hooks (useCart, useToast)
+- TypeScript for type safety
+- Stripe API integration
+- Next.js App Router
+
+**Status:** ✅ Completed
+
+**Related Files:**
+- Cart Context: src/contexts/CartContext.tsx
+- Toast Context: src/contexts/ToastContext.tsx
+- Cart Drawer: src/components/storefront/CartDrawer.tsx
+- Cart Item: src/components/storefront/CartItem.tsx
+- Header with Cart Badge: src/components/storefront/Header.tsx
+- Product Card: src/components/storefront/ProductCard.tsx
+- Product Detail: src/app/products/[id]/page.tsx
+- Checkout Page: src/app/checkout/page.tsx
+- Success Page: src/app/success/page.tsx
+- Checkout API: src/app/api/checkout/route.ts
+
+---
+
 ## 2025-10-26 03:33
 ### [Feature] Complete Stripe Integration
 **Files Modified:**
