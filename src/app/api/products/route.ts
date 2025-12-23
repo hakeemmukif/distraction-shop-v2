@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe/client';
+import { CURRENCY } from '@/lib/constants';
+import Stripe from 'stripe';
 
 export async function GET(request: NextRequest) {
   try {
@@ -14,58 +16,54 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Fetch products from Stripe
+    // Fetch products from Stripe with expanded price data to avoid N+1 queries
     const stripeProducts = await stripe.products.list({
       active: true,
       limit: limit,
+      expand: ['data.default_price'],
     });
 
     // Filter and transform products
-    const products = await Promise.all(
-      stripeProducts.data
-        .filter((product) => product.metadata.unit_label === category)
-        .map(async (product) => {
-          // Get price
-          let price = 0;
-          if (product.default_price) {
-            const priceId = typeof product.default_price === 'string'
-              ? product.default_price
-              : product.default_price.id;
-            const priceData = await stripe.prices.retrieve(priceId);
-            price = priceData.unit_amount || 0;
+    const products = stripeProducts.data
+      .filter((product) => product.metadata.unit_label === category)
+      .map((product) => {
+        // Get price from expanded data
+        let price = 0;
+        if (product.default_price && typeof product.default_price !== 'string') {
+          const priceData = product.default_price as Stripe.Price;
+          price = priceData.unit_amount || 0;
+        }
+
+        // Parse sizes from metadata
+        const sizes: Array<{ label: string; stock: number; available: boolean }> = [];
+        Object.keys(product.metadata).forEach((key) => {
+          if (key.startsWith('size_') && !key.includes('stock')) {
+            const sizeLabel = product.metadata[key];
+            const stockKey = `${key}_stock`;
+            const stock = parseInt(product.metadata[stockKey] || '0');
+            sizes.push({
+              label: sizeLabel,
+              stock: stock,
+              available: stock > 0,
+            });
           }
+        });
 
-          // Parse sizes from metadata
-          const sizes: Array<{ label: string; stock: number; available: boolean }> = [];
-          Object.keys(product.metadata).forEach((key) => {
-            if (key.startsWith('size_') && !key.includes('stock')) {
-              const sizeLabel = product.metadata[key];
-              const stockKey = `${key}_stock`;
-              const stock = parseInt(product.metadata[stockKey] || '0');
-              sizes.push({
-                label: sizeLabel,
-                stock: stock,
-                available: stock > 0,
-              });
-            }
-          });
-
-          return {
-            id: product.id,
-            name: product.name,
-            description: product.description || '',
-            price: price,
-            currency: 'myr',
-            images: [
-              product.metadata.image_1,
-              product.metadata.image_2,
-              product.metadata.image_3,
-            ] as [string, string, string],
-            sizes: sizes,
-            category: product.metadata.unit_label as 'home' | 'skate_shop' | 'preloved',
-          };
-        })
-    );
+        return {
+          id: product.id,
+          name: product.name,
+          description: product.description || '',
+          price: price,
+          currency: CURRENCY.toLowerCase(),
+          images: [
+            product.metadata.image_1,
+            product.metadata.image_2,
+            product.metadata.image_3,
+          ] as [string, string, string],
+          sizes: sizes,
+          category: product.metadata.unit_label as 'home' | 'skate_shop' | 'preloved',
+        };
+      });
 
     return NextResponse.json({
       products,
