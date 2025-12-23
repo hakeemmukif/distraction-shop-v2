@@ -1,68 +1,62 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { stripe } from '@/lib/stripe/client';
+import { CURRENCY } from '@/lib/constants';
 import Stripe from 'stripe';
 
-interface CartItem {
-  productId: string;
-  name: string;
-  price: number; // in MYR
-  size: string;
-  quantity: number;
-  image: string;
-}
+// Zod schema for checkout validation
+const cartItemSchema = z.object({
+  productId: z.string().min(1),
+  name: z.string().min(1),
+  price: z.number().positive(),
+  size: z.string().min(1),
+  quantity: z.number().int().positive(),
+  image: z.string().url(),
+});
 
-interface Customer {
-  email: string;
-  name: string;
-  phone: string;
-}
+const customerSchema = z.object({
+  email: z.string().email(),
+  name: z.string().min(1),
+  phone: z.string().min(1),
+});
 
-interface ShippingAddress {
-  line1: string;
-  line2?: string;
-  city: string;
-  state: string;
-  postal_code: string;
-  country: string;
-}
+const shippingAddressSchema = z.object({
+  line1: z.string().min(1),
+  line2: z.string().optional(),
+  city: z.string().min(1),
+  state: z.string().min(1),
+  postal_code: z.string().min(1),
+  country: z.string().min(2).max(2),
+});
 
-interface Shipping {
-  name: string;
-  phone: string;
-  address: ShippingAddress;
-}
+const shippingSchema = z.object({
+  name: z.string().min(1),
+  phone: z.string().min(1),
+  address: shippingAddressSchema,
+});
 
-interface CheckoutRequest {
-  items: CartItem[];
-  customer: Customer;
-  shipping: Shipping;
-}
+const checkoutSchema = z.object({
+  items: z.array(cartItemSchema).min(1, 'Cart cannot be empty'),
+  customer: customerSchema,
+  shipping: shippingSchema,
+});
+
+type CheckoutRequest = z.infer<typeof checkoutSchema>;
 
 export async function POST(request: NextRequest) {
   try {
-    const body: CheckoutRequest = await request.json();
+    const rawBody = await request.json();
 
-    // Validate request
-    if (!body.items || !Array.isArray(body.items) || body.items.length === 0) {
+    // Validate request with Zod
+    const parseResult = checkoutSchema.safeParse(rawBody);
+    if (!parseResult.success) {
       return NextResponse.json(
-        { error: 'Cart is empty' },
+        { error: 'Invalid input', details: parseResult.error.errors },
         { status: 400 }
       );
     }
 
-    if (!body.customer || !body.customer.email || !body.customer.name) {
-      return NextResponse.json(
-        { error: 'Customer information is required' },
-        { status: 400 }
-      );
-    }
-
-    if (!body.shipping || !body.shipping.address) {
-      return NextResponse.json(
-        { error: 'Shipping information is required' },
-        { status: 400 }
-      );
-    }
+    const body: CheckoutRequest = parseResult.data;
 
     // Validate stock availability for each item
     const validationErrors: Array<{ productId: string; issue: string }> = [];
@@ -157,7 +151,7 @@ export async function POST(request: NextRequest) {
     const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = body.items.map(
       (item) => ({
         price_data: {
-          currency: 'myr',
+          currency: CURRENCY.toLowerCase(),
           product_data: {
             name: `${item.name} - ${item.size}`,
             images: [item.image],

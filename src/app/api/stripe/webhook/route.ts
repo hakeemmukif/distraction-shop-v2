@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { randomBytes } from 'crypto';
 import { stripe } from '@/lib/stripe/client';
-import { prisma } from '@/lib/db';
+import { prisma } from '@/lib/prisma';
 import Stripe from 'stripe';
 
-// Helper to generate order number
+// Helper to generate order number with cryptographically secure randomness
 function generateOrderNumber(): string {
   const timestamp = Date.now().toString().slice(-8);
-  const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+  const random = randomBytes(4).toString('hex').toUpperCase();
   return `ORD-${timestamp}-${random}`;
 }
 
@@ -91,8 +92,14 @@ export async function POST(request: NextRequest) {
 
         console.log('Processing checkout.session.completed:', session.id);
 
-        // Parse items from metadata
-        const items = JSON.parse(session.metadata?.items || '[]');
+        // Parse items from metadata with error handling
+        let items;
+        try {
+          items = JSON.parse(session.metadata?.items || '[]');
+        } catch (parseError) {
+          console.error('Failed to parse items from metadata:', parseError);
+          items = [];
+        }
 
         if (items.length === 0) {
           console.error('No items found in session metadata');

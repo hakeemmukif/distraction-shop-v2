@@ -41,18 +41,6 @@ export default function Header() {
             >
               Skate Shop
             </Link>
-            {/* <Link
-              href="/terms"
-              className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
-            >
-              Terms
-            </Link>
-            <Link
-              href="/contact"
-              className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
-            >
-              Contact
-            </Link> */}
           </div>
 
           {/* Cart Icon (Desktop) */}
@@ -147,20 +135,6 @@ export default function Header() {
               >
                 Skate Shop
               </Link>
-              {/* <Link
-                href="/terms"
-                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Terms
-              </Link>
-              <Link
-                href="/contact"
-                className="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Contact
-              </Link> */}
               <div className="border-t border-gray-200 pt-2 mt-2">
                 <button
                   onClick={() => {
