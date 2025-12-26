@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { verifyJWT } from '@/lib/auth/jwt';
+import { verifyJWTEdge } from '@/lib/auth/jwt-edge';
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const token = request.cookies.get('auth-token')?.value;
   const { pathname } = request.nextUrl;
 
@@ -11,7 +11,7 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL('/auth/login', request.url));
     }
 
-    const user = verifyJWT(token);
+    const user = await verifyJWTEdge(token);
 
     if (!user) {
       return NextResponse.redirect(new URL('/auth/login', request.url));
