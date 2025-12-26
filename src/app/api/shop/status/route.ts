@@ -1,21 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getShopOverride } from '@/lib/shop-override';
 
-// Default schedule (used if SHOP_SCHEDULE env var not set)
-const DEFAULT_SCHEDULE = {
-  timezone: 'Asia/Kuala_Lumpur',
-  schedule: {
-    monday: { open: '10:00', close: '18:00' },
-    tuesday: { open: '10:00', close: '18:00' },
-    wednesday: { open: '10:00', close: '18:00' },
-    thursday: { open: '10:00', close: '18:00' },
-    friday: { open: '10:00', close: '18:00' },
-    saturday: { open: '11:00', close: '17:00' },
-    sunday: { closed: true },
-  },
-  overrideStatus: null, // 'open' | 'closed' | null
-};
-
 type DaySchedule = { open: string; close: string } | { closed: true };
 type WeekSchedule = {
   monday: DaySchedule;
@@ -31,6 +16,21 @@ type ShopConfig = {
   timezone: string;
   schedule: WeekSchedule;
   overrideStatus: 'open' | 'closed' | null;
+};
+
+// Default schedule (used if SHOP_SCHEDULE env var not set)
+const DEFAULT_SCHEDULE: ShopConfig = {
+  timezone: 'Asia/Kuala_Lumpur',
+  schedule: {
+    monday: { open: '10:00', close: '18:00' },
+    tuesday: { open: '10:00', close: '18:00' },
+    wednesday: { open: '10:00', close: '18:00' },
+    thursday: { open: '10:00', close: '18:00' },
+    friday: { open: '10:00', close: '18:00' },
+    saturday: { open: '11:00', close: '17:00' },
+    sunday: { closed: true as const },
+  },
+  overrideStatus: null,
 };
 
 /**

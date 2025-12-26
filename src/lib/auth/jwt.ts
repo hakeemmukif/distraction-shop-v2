@@ -1,9 +1,10 @@
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.NEXTAUTH_SECRET;
-if (!JWT_SECRET) {
+const envSecret = process.env.NEXTAUTH_SECRET;
+if (!envSecret) {
   throw new Error('NEXTAUTH_SECRET must be defined in environment variables');
 }
+const JWT_SECRET: string = envSecret;
 
 const JWT_EXPIRY = '7d';
 

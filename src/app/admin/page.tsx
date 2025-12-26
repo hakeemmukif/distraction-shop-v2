@@ -44,7 +44,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleCreateProduct = async (data: any) => {
+  const handleCreateProduct = async (data: Record<string, unknown>) => {
     try {
       const response = await fetch('/api/admin/products', {
         method: 'POST',
@@ -65,7 +65,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleEditProduct = async (data: any) => {
+  const handleEditProduct = async (data: Record<string, unknown>) => {
     if (!editingProduct) return;
 
     try {

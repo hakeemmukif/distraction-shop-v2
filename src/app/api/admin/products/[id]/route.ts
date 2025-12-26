@@ -27,7 +27,7 @@ const updateProductSchema = z.object({
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const auth = await requireAuth(request, ['admin', 'superadmin']);
@@ -35,11 +35,12 @@ export async function PUT(
       return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
 
+    const { id } = await params;
     const body = await request.json();
     const data = updateProductSchema.parse(body);
 
     // Get existing product
-    const existingProduct = await stripe.products.retrieve(params.id);
+    const existingProduct = await stripe.products.retrieve(id);
 
     // Build updated metadata
     const metadata: Record<string, string> = {
@@ -74,22 +75,22 @@ export async function PUT(
     }
 
     // Update product
-    const updateData: any = { metadata };
+    const updateData: Record<string, unknown> = { metadata };
 
     if (data.name) updateData.name = data.name;
     if (data.description !== undefined) updateData.description = data.description;
 
-    const product = await stripe.products.update(params.id, updateData);
+    const product = await stripe.products.update(id, updateData);
 
     // Update price if changed
     if (data.price) {
       const newPrice = await stripe.prices.create({
         unit_amount: Math.round(data.price * 100),
         currency: 'myr',
-        product: params.id,
+        product: id,
       });
 
-      await stripe.products.update(params.id, {
+      await stripe.products.update(id, {
         default_price: newPrice.id,
       });
     }
@@ -106,7 +107,7 @@ export async function PUT(
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid input', details: error.errors },
+        { error: 'Invalid input', details: error.issues },
         { status: 400 }
       );
     }
@@ -124,7 +125,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const auth = await requireAuth(request, ['admin', 'superadmin']);
@@ -132,7 +133,8 @@ export async function DELETE(
       return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
 
-    await stripe.products.update(params.id, {
+    const { id } = await params;
+    await stripe.products.update(id, {
       active: false,
     });
 

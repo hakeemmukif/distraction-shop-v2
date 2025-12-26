@@ -45,7 +45,7 @@ export default function ContactPage() {
           <div className="mb-8">
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Contact Us</h1>
             <p className="text-gray-600">
-              Have a question or feedback? We'd love to hear from you.
+              Have a question or feedback? We&apos;d love to hear from you.
             </p>
           </div>
 
@@ -150,7 +150,7 @@ export default function ContactPage() {
                 {status === 'success' && (
                   <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
                     <p className="text-green-800 font-medium">
-                      Thank you! Your message has been sent successfully. We'll get back to you soon.
+                      Thank you! Your message has been sent successfully. We&apos;ll get back to you soon.
                     </p>
                   </div>
                 )}

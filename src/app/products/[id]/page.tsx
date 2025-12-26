@@ -31,7 +31,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
 
         // Set default size if available
         if (data.sizes && data.sizes.length > 0) {
-          const firstAvailable = data.sizes.find((s: any) => s.available);
+          const firstAvailable = data.sizes.find((s: { available: boolean; label: string }) => s.available);
           if (firstAvailable) {
             setSelectedSize(firstAvailable.label);
           }

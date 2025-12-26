@@ -11,7 +11,7 @@ export default function PrelovedPage() {
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Preloved</h1>
           <p className="text-xl text-gray-600 mb-2">Coming Soon</p>
           <p className="text-gray-500 mb-8">
-            We're working on bringing you a curated selection of preloved streetwear and skateboarding gear.
+            We&apos;re working on bringing you a curated selection of preloved streetwear and skateboarding gear.
             Check back soon!
           </p>
           <Link

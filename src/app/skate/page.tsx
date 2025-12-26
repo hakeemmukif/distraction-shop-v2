@@ -11,7 +11,7 @@ export default function SkateShopPage() {
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Skate Shop</h1>
           <p className="text-xl text-gray-600 mb-2">Coming Soon</p>
           <p className="text-gray-500 mb-8">
-            We're preparing an amazing collection of skateboarding gear, decks, wheels, and accessories.
+            We&apos;re preparing an amazing collection of skateboarding gear, decks, wheels, and accessories.
             Stay tuned!
           </p>
           <Link

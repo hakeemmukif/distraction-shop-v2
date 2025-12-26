@@ -34,15 +34,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const data = createProductSchema.parse(body);
 
-    // Create price in Stripe (price in RM, convert to cents)
-    const price = await stripe.prices.create({
-      unit_amount: Math.round(data.price * 100),
-      currency: 'myr',
-      product_data: {
-        name: data.name,
-      },
-    });
-
     // Build metadata
     const metadata: Record<string, string> = {
       unit_label: data.category,
@@ -60,13 +51,24 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Create product in Stripe
-    const product = await stripe.products.create({
+    // Create product in Stripe first
+    let product = await stripe.products.create({
       name: data.name,
       description: data.description || '',
-      default_price: price.id,
       metadata,
       active: true,
+    });
+
+    // Create price with reference to the product
+    const price = await stripe.prices.create({
+      unit_amount: Math.round(data.price * 100),
+      currency: 'myr',
+      product: product.id,
+    });
+
+    // Update product to set the default price
+    product = await stripe.products.update(product.id, {
+      default_price: price.id,
     });
 
     return NextResponse.json({
@@ -83,7 +85,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Invalid input', details: error.errors },
+        { error: 'Invalid input', details: error.issues },
         { status: 400 }
       );
     }

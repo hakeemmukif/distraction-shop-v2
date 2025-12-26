@@ -81,9 +81,13 @@ export default function ProductForm({
     setSizes([...sizes, { size: '', stock: 0 }]);
   };
 
-  const updateSize = (index: number, field: 'size' | 'stock', value: any) => {
+  const updateSize = (index: number, field: 'size' | 'stock', value: string | number) => {
     const updated = [...sizes];
-    updated[index][field] = field === 'stock' ? parseInt(value) || 0 : value;
+    if (field === 'stock') {
+      updated[index].stock = typeof value === 'string' ? parseInt(value) || 0 : value;
+    } else {
+      updated[index].size = String(value);
+    }
     setSizes(updated);
   };
 
@@ -221,7 +225,7 @@ export default function ProductForm({
 
         {sizes.length === 0 && (
           <p className="text-sm text-gray-500">
-            No sizes added. Product will have direct "Add to Cart" button.
+            No sizes added. Product will have direct &quot;Add to Cart&quot; button.
           </p>
         )}
       </div>

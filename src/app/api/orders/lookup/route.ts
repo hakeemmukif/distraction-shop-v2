@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 
 export async function GET(request: NextRequest) {
   try {
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Build query
-    const where: any = { customerId: customer.id };
+    const where: Prisma.OrderWhereInput = { customerId: customer.id };
     if (orderNumber) {
       where.orderNumber = orderNumber;
     }

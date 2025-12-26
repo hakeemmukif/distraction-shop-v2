@@ -86,10 +86,10 @@ export async function GET(
     };
 
     return NextResponse.json(productData);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Failed to fetch product:', error);
 
-    if (error.code === 'resource_missing') {
+    if (error instanceof Error && 'code' in error && error.code === 'resource_missing') {
       return NextResponse.json(
         { error: 'Product not found' },
         { status: 404 }

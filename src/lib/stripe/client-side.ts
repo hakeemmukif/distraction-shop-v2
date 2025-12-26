@@ -16,16 +16,7 @@ export const getStripe = () => {
   return stripePromise;
 };
 
-export const redirectToCheckout = async (sessionId: string) => {
-  const stripe = await getStripe();
-
-  if (!stripe) {
-    throw new Error('Failed to load Stripe');
-  }
-
-  const { error } = await stripe.redirectToCheckout({ sessionId });
-
-  if (error) {
-    throw error;
-  }
+export const redirectToCheckout = async (checkoutUrl: string) => {
+  // Modern Stripe Checkout: redirect to the session URL directly
+  window.location.href = checkoutUrl;
 };

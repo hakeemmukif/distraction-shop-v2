@@ -1,6 +1,6 @@
 'use client';
 
-import { CldUploadWidget } from 'next-cloudinary';
+import { CldUploadWidget, CloudinaryUploadWidgetResults } from 'next-cloudinary';
 import { useState } from 'react';
 
 interface CloudinaryUploadProps {
@@ -22,7 +22,8 @@ export default function CloudinaryUpload({
       : []
   );
 
-  const handleUpload = (result: any) => {
+  const handleUpload = (result: CloudinaryUploadWidgetResults) => {
+    if (!result.info || typeof result.info === 'string') return;
     const newUrl = result.info.secure_url;
     const updatedImages = [...images, newUrl].slice(0, 3);
     setImages(updatedImages);

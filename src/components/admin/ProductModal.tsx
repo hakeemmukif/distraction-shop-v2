@@ -6,8 +6,8 @@ import ProductForm from './ProductForm';
 interface ProductModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: any) => Promise<void>;
-  initialData?: any;
+  onSubmit: (data: Record<string, unknown>) => Promise<void>;
+  initialData?: Record<string, unknown>;
   title: string;
 }
 

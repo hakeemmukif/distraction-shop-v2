@@ -74,7 +74,7 @@ function SuccessContent() {
 
           {/* Next Steps */}
           <div className="bg-blue-50 rounded-lg p-6 mb-8 text-left">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">What's Next?</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">What&apos;s Next?</h2>
             <ul className="space-y-3 text-sm text-gray-700">
               <li className="flex items-start">
                 <svg
@@ -88,7 +88,7 @@ function SuccessContent() {
                 >
                   <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
-                <span>You'll receive an order confirmation email shortly with your order details.</span>
+                <span>You&apos;ll receive an order confirmation email shortly with your order details.</span>
               </li>
               <li className="flex items-start">
                 <svg
@@ -102,7 +102,7 @@ function SuccessContent() {
                 >
                   <path d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                 </svg>
-                <span>We'll start processing your order and notify you when it ships.</span>
+                <span>We&apos;ll start processing your order and notify you when it ships.</span>
               </li>
               <li className="flex items-start">
                 <svg
