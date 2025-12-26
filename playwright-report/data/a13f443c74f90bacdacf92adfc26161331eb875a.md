@@ -1,0 +1,142 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - banner [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e4]:
+        - link "DISTRACTION SHOP" [ref=e6] [cursor=pointer]:
+          - /url: /home
+        - generic [ref=e7]:
+          - link "Home" [ref=e8] [cursor=pointer]:
+            - /url: /home
+          - link "Preloved" [ref=e9] [cursor=pointer]:
+            - /url: /preloved
+          - link "Skate Shop" [ref=e10] [cursor=pointer]:
+            - /url: /skate
+        - button [ref=e12]:
+          - img [ref=e13]
+    - generic [ref=e16]:
+      - generic [ref=e17]:
+        - heading "Shopping Cart (0)" [level=2] [ref=e18]
+        - button [ref=e19]:
+          - img [ref=e20]
+      - generic [ref=e23]:
+        - img [ref=e24]
+        - heading "Your cart is empty" [level=3] [ref=e26]
+        - paragraph [ref=e27]: Add some products to get started
+        - button "Continue Shopping" [ref=e28]
+  - generic [ref=e29]:
+    - heading "Product Not Found" [level=1] [ref=e30]
+    - paragraph [ref=e31]: Product not found
+    - link "Back to Home" [ref=e32] [cursor=pointer]:
+      - /url: /home
+  - contentinfo [ref=e33]:
+    - generic [ref=e34]:
+      - generic [ref=e35]:
+        - generic [ref=e36]:
+          - heading "DISTRACTION SHOP" [level=3] [ref=e37]
+          - paragraph [ref=e38]: Streetwear and skateboarding merchandise curated with passion.
+        - generic [ref=e39]:
+          - heading "Quick Links" [level=3] [ref=e40]
+          - list [ref=e41]:
+            - listitem [ref=e42]:
+              - link "Home" [ref=e43] [cursor=pointer]:
+                - /url: /home
+            - listitem [ref=e44]:
+              - link "Preloved" [ref=e45] [cursor=pointer]:
+                - /url: /preloved
+            - listitem [ref=e46]:
+              - link "Skate Shop" [ref=e47] [cursor=pointer]:
+                - /url: /skate
+        - generic [ref=e48]:
+          - heading "Legal" [level=3] [ref=e49]
+          - list [ref=e50]:
+            - listitem [ref=e51]:
+              - link "Terms & Conditions" [ref=e52] [cursor=pointer]:
+                - /url: /terms
+            - listitem [ref=e53]:
+              - link "Contact Us" [ref=e54] [cursor=pointer]:
+                - /url: /contact
+      - paragraph [ref=e56]: © 2025 Distraction Shop. All rights reserved.
+  - generic [active]:
+    - generic [ref=e59]:
+      - generic [ref=e60]:
+        - generic [ref=e61]:
+          - navigation [ref=e62]:
+            - button "previous" [disabled] [ref=e63]:
+              - img "previous" [ref=e64]
+            - generic [ref=e66]:
+              - generic [ref=e67]: 1/
+              - text: "1"
+            - button "next" [disabled] [ref=e68]:
+              - img "next" [ref=e69]
+          - img
+        - generic [ref=e71]:
+          - link "Next.js 15.5.6 (outdated) Turbopack" [ref=e72] [cursor=pointer]:
+            - /url: https://nextjs.org/docs/messages/version-staleness
+            - img [ref=e73]
+            - generic "An outdated version detected (latest is 16.0.1), upgrade is highly recommended!" [ref=e75]: Next.js 15.5.6 (outdated)
+            - generic [ref=e76]: Turbopack
+          - img
+      - dialog "Build Error" [ref=e78]:
+        - generic [ref=e81]:
+          - generic [ref=e82]:
+            - generic [ref=e83]:
+              - generic [ref=e85]: Build Error
+              - generic [ref=e86]:
+                - button "Copy Error Info" [ref=e87] [cursor=pointer]:
+                  - img [ref=e88]
+                - link "Go to related documentation" [ref=e90] [cursor=pointer]:
+                  - /url: https://nextjs.org/docs/messages/module-not-found
+                  - img [ref=e91]
+                - link "Learn more about enabling Node.js inspector for server code with Chrome DevTools" [ref=e93] [cursor=pointer]:
+                  - /url: https://nextjs.org/docs/app/building-your-application/configuring/debugging#server-side-code
+                  - img [ref=e94]
+            - paragraph [ref=e103]: "Module not found: Can't resolve '@/lib/db'"
+          - generic [ref=e105]:
+            - generic [ref=e107]:
+              - img [ref=e109]
+              - generic [ref=e113]: ./distraction-shop-v2.0/src/app/api/orders/lookup/route.ts (2:1)
+              - button "Open in editor" [ref=e114] [cursor=pointer]:
+                - img [ref=e116]
+            - generic [ref=e119]:
+              - generic [ref=e120]: Module not found
+              - generic [ref=e121]: ": Can't resolve"
+              - text: "'@/lib/db'"
+              - generic [ref=e122]: 1 |
+              - text: import
+              - generic [ref=e123]: "{"
+              - text: NextRequest, NextResponse
+              - generic [ref=e124]: "}"
+              - text: from 'next/server'; >
+              - generic [ref=e125]: 2 |
+              - text: import
+              - generic [ref=e126]: "{ prisma }"
+              - text: from '@/lib/db';
+              - generic [ref=e127]: "|"
+              - text: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+              - generic [ref=e128]: 3 |
+              - generic [ref=e129]: 4 |
+              - text: "export async function GET(request: NextRequest"
+              - generic [ref=e130]: ") {"
+              - generic [ref=e131]: 5 |
+              - text: try
+              - generic [ref=e132]: "{"
+              - generic [ref=e133]:
+                - text: "Import map: aliased to relative './src/lib/db' inside of [project]/distraction-shop-v2.0"
+                - link "https://nextjs.org/docs/messages/module-not-found" [ref=e134] [cursor=pointer]:
+                  - /url: https://nextjs.org/docs/messages/module-not-found
+        - generic [ref=e135]:
+          - generic [ref=e136]: "1"
+          - generic [ref=e137]: "2"
+    - generic [ref=e142] [cursor=pointer]:
+      - button "Open Next.js Dev Tools" [ref=e143]:
+        - img [ref=e144]
+      - button "Open issues overlay" [ref=e148]:
+        - generic [ref=e149]:
+          - generic [ref=e150]: "0"
+          - generic [ref=e151]: "1"
+        - generic [ref=e152]: Issue
+  - alert [ref=e153]
+```

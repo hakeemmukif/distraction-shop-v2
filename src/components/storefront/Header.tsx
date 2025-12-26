@@ -13,7 +13,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="relative flex h-16 items-center">
+        <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="/home" className="text-xl font-bold text-gray-900">
@@ -21,8 +21,8 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Desktop Navigation - Centered */}
-          <div className="hidden md:flex md:items-center absolute left-1/2 transform -translate-x-1/2">
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex md:items-center md:gap-8">
             <Link
               href="/home"
               className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
@@ -31,7 +31,7 @@ export default function Header() {
             </Link>
             <Link
               href="/preloved"
-              className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors mx-8"
+              className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors"
             >
               Preloved
             </Link>
@@ -44,7 +44,7 @@ export default function Header() {
           </div>
 
           {/* Cart Icon (Desktop) */}
-          <div className="hidden md:flex md:items-center ml-auto">
+          <div className="hidden md:flex md:items-center">
             <button
               onClick={() => setCartDrawerOpen(true)}
               className="relative p-2 text-gray-700 hover:text-gray-900"
